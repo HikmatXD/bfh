@@ -123,6 +123,13 @@ x_fb = 'x.facebook.com'
 d_fb = 'd.facebook.com'
 head_grup = {"user-agent": "Mozilla/5.0 (Linux; Android 10; Mi 9T Pro Build/QKQ1.190825.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/88.0.4324.181 Mobile Safari/537.36 [FBAN/EMA;FBLC/id_ID;FBAV/239.0.0.10.109;]"}
 
+try:
+	proxy_crack = requests.get('https://api.proxyscrape.com/v2/?request=displayproxies&protocol=socks4&timeout=100000&country=all&ssl=all&anonymity=all').text
+	open('proxy_mat.txt','w').write(proxy_crack)
+except Exception as e:
+	print('Failed')
+proxy_crack = open('proxy_mat.txt','r').read().splitlines()
+
 def clear():
 	os.system("clear")
 def jalan(z):
@@ -314,13 +321,15 @@ def menu():
 		menu()
 
 def run(link, cookie):
+	nip=random.choice(proxy_crack)
+	proxs= {'http': 'socks4://'+nip}
 	token = open('token.txt','r').read()
 	cookie = open('cookie.txt','r').read()
 	coki = {"cookie":cookie}
 	while True:
 		headers = {'authority': 'graph.facebook.com','cache-control': 'max-age=0','sec-ch-ua-mobile': '?0','user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.66 Safari/537.36',}
 		try:
-			response = requests.post('https://graph.facebook.com/me/feed?link=%s&published=0&access_token=%s'%(link,token),cookies=coki, headers=headers)
+			response = requests.post('https://graph.facebook.com/me/feed?link=%s&published=0&access_token=%s'%(link,token),cookies=coki, headers=headers, proxies=proxs)
 			print(response.text)
 			if "Kami membatasi seberapa sering Anda dapat memposting, berkomentar, atau melakukan hal-hal lain dalam jumlah waktu tertentu guna membantu melindungi komunitas dari spam. Anda bisa mencoba lagi nanti. Pelajari Selengkapnya" in response.text:
 				clear()
@@ -383,7 +392,7 @@ def komen_profil():
 		input(maling_pangsit+"\n Tekan enter untuk kembali ke menu ")
 		menu()
 		
-
+		
 #### BOT KOMEN TARGET ####
 def komen_public():
 	try:
@@ -432,7 +441,7 @@ def komen_grup():
 	print(maling_pangsit+" Harap gunakan '<>' untuk membuat garis baru")
 	ide = input(maling_pangsit+' ID grup     :'+H+' ')
 	km = input(maling_pangsit+' Komentar    :'+H+' ')
-	limit = raw_input(maling_pangsit+" Limit       :"+H+' ')
+	limit = input(maling_pangsit+" Limit       :"+H+' ')
 	km=km.replace('<>','\n')
 	try:
 		r=requests.get('https://graph.facebook.com/group/?id=%s&access_token=%s'%(ide,token),cookies=coki)
